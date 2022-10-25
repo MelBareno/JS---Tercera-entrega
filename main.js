@@ -38,6 +38,20 @@ return precioFinal;
 
 // console.log(precioFinal); 
 
+
+//---------------- Carrito de compras input ---------------------//
+
+
+const btnCarrito = document.querySelector("#cart");
+const ventanaCarrito = document.querySelector(".cart-modal-overlay");
+const cerrarCarrito = document.querySelector("#close-btn");
+const botonesComprar = document.querySelectorAll(".add-to-cart");
+const contenedorCarrito = document.querySelector(".product-rows");
+const totalCarrito = document.querySelector('.total-price');
+const totalProducto = document.querySelector(".cart-quantity");
+let carrito = [];
+
+
 //---------------- Carga de productos usuarios internos ---------------------//
 
 
@@ -51,6 +65,7 @@ const listaProductos = [
 
 class Producto {
     constructor(nombre, categoria, precio) {
+        
         this.nombre = nombre;
         this.categoria = categoria;
         this.precio = precio
@@ -61,7 +76,7 @@ const guardarProducto = () => {
     let categoria = document.getElementById("categoria").value;
     let precio = parseFloat(document.getElementById("precio").value);
 
-    let nuevoProd = new Producto(nombre, categoria, precio);
+    let nuevoProd = new Producto(id,nombre, categoria, precio);
     listaProductos.push(nuevoProd);
 }
 
@@ -125,9 +140,9 @@ document.getElementById("search").addEventListener("click", () => {
   });
   
   
-// -----------------Carrito de compras---------------------//
+// -----------------Carrito de compras funciones---------------------//
 //MAP - crea otro array con alguna transformacion
-let listaNueva = listaProductos.map(producto => producto.precio = producto.precio * 1.07);
+/* let listaNueva = listaProductos.map(producto => producto.precio = producto.precio * 1.07);
 
 console.log(listaNueva)
 
@@ -136,4 +151,65 @@ console.log(listaNueva)
 const totalCarrito = listaProductos.reduce((acumulador, producto)=> {
    return acumulador + producto.precio;
 }, 0);
-console.log(`El total es  $${totalCarrito}`);
+console.log(`El total es  $${totalCarrito}`); */
+
+// abrir el carrito 
+btnCarrito.addEventListener("click", ()=> {
+  ventanaCarrito.classList.add("open");
+})
+
+//cerrar carrito
+cerrarCarrito.addEventListener("click", ()=> {
+  ventanaCarrito.classList.remove("open");
+})
+
+console.log(botonesComprar);
+//agregar a cada boton la funcion para agregar el producto al carrito
+botonesComprar.forEach(boton => {
+  boton.addEventListener("click", agregarCarrito);
+})
+
+
+function agregarCarrito(e){
+  boton = e.target;
+  let padre = boton.parentElement;
+  let prodID = padre.getAttribute("id");
+  let nombreProd = padre.querySelector("h3").textContent;
+  let precio = parseFloat(padre.querySelector('.product-price').textContent.replace("$", ""));
+  let imagen = padre.querySelector('.product-image').src;
+  
+  const prodCarrito = new Producto(prodID,nombreProd, precio, imagen);
+
+  carrito.push(prodCarrito);
+  popularCarrito();
+  ActualizarCantidadCarrito();
+}
+
+function popularCarrito(){
+  contenedorCarrito.innerHTML = '';
+  carrito.forEach(producto => {
+      contenedorCarrito.innerHTML += `
+          <div class='product-row' id='${producto.id}'>
+              <img src='${producto.imagen}' class='cart-image' />
+              <span>${producto.nombre}</span>
+              <span class='cart-price'>$${producto.precio}</span>
+              <input type='number' value='1' class="product-quantity" />
+              <button class="remove-btn">Borrar</button>
+          </div>
+      `
+  })
+  actualizarTotal();
+  
+}
+
+function actualizarTotal() {
+  let total = carrito.reduce((acc, producto)=>{ 
+      return acc + producto.precio 
+  },0)
+  // console.log(total)
+  totalCarrito.innerHTML = `$${total}`
+}
+
+function ActualizarCantidadCarrito () {
+  totalProducto.textContent = carrito.length;
+}
