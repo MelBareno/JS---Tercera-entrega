@@ -82,7 +82,17 @@ const guardarProducto = () => {
 
 console.log(listaProductos);
 
-//FOREACH - 
+
+//---------------- Create card ---------------------//
+
+/* for (let i of products.data) {
+  //Create Card
+  let card = document.createElement("div");
+  card.appendChild(container);
+  document.getElementById("products").appendChild(card);
+} */
+
+  //FOREACH - 
 listaProductos.forEach((producto)=> {
     console.log(`este producto es ${producto.nombre} y su precio es $${producto.precio}`)
 });
@@ -93,10 +103,15 @@ let contenedorProd = document.createElement("div");
 contenedorProd.innerHTML = `
     <h3 id='${producto.id}'>${producto.nombre}</h3>
     <p>${producto.categoria}</p>
-    <p>$${producto.precio}</p>
+    <span class="product-price">$${producto.precio}</span>
+    <button class="add-to-cart">Comprar</button>
  `;
 document.querySelector("#productos").append(contenedorProd);
 })
+
+
+
+
 
 //---------------- Busqueda de productos en la web ---------------------//
 
@@ -173,12 +188,10 @@ botonesComprar.forEach(boton => {
 function agregarCarrito(e){
   boton = e.target;
   let padre = boton.parentElement;
-  let prodID = padre.getAttribute("id");
   let nombreProd = padre.querySelector("h3").textContent;
   let precio = parseFloat(padre.querySelector('.product-price').textContent.replace("$", ""));
-  let imagen = padre.querySelector('.product-image').src;
   
-  const prodCarrito = new Producto(prodID,nombreProd, precio, imagen);
+  const prodCarrito = new Producto(nombreProd, precio);
 
   carrito.push(prodCarrito);
   popularCarrito();
@@ -189,9 +202,8 @@ function popularCarrito(){
   contenedorCarrito.innerHTML = '';
   carrito.forEach(producto => {
       contenedorCarrito.innerHTML += `
-          <div class='product-row' id='${producto.id}'>
-              <img src='${producto.imagen}' class='cart-image' />
-              <span>${producto.nombre}</span>
+          <div class='product-row'>
+            <span>${producto.nombreProd}</span>
               <span class='cart-price'>$${producto.precio}</span>
               <input type='number' value='1' class="product-quantity" />
               <button class="remove-btn">Borrar</button>
